@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Italiano in Due Settimane</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --terracotta: #C4572A; --terracotta-light: #D4784E;
+    --cream: #F5F0E8; --cream-dark: #E8E0D0;
+    --olive: #5A6B3C; --olive-light: #7A8E5A;
+    --ink: #2C2420; --ink-light: #5A504A;
+    --gold: #C8A951; --white: #FDFCFA;
+    --shadow: rgba(44,36,32,0.08); --correct: #4A7C59; --incorrect: #B84233; --radius: 12px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; }
+  .header { background:var(--terracotta); color:var(--white); padding:2rem 1.5rem 1.5rem; position:relative; overflow:hidden; }
+  .header::before { content:''; position:absolute; top:-50%; left:-20%; width:140%; height:200%; background:radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%); pointer-events:none; }
+  .header h1 { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; letter-spacing:-0.02em; position:relative; }
+  .header h1 em { font-style:italic; font-weight:400; opacity:0.9; }
+  .header p { font-size:0.85rem; opacity:0.8; margin-top:0.3rem; font-weight:300; }
+  .progress-bar-container { margin-top:1rem; background:rgba(255,255,255,0.15); border-radius:20px; height:6px; }
+  .progress-bar-fill { height:100%; background:var(--gold); border-radius:20px; transition:width 0.5s; width:0%; }
+  .progress-label { font-size:0.7rem; opacity:0.7; margin-top:0.3rem; text-align:right; }
+  .nav { display:flex; background:var(--white); border-bottom:1px solid var(--cream-dark); overflow-x:auto; scrollbar-width:none; }
+  .nav::-webkit-scrollbar { display:none; }
+  .nav-tab { flex:none; padding:0.8rem 1.1rem; font-size:0.78rem; font-weight:500; color:var(--ink-light); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; white-space:nowrap; user-select:none; }
+  .nav-tab:hover { color:var(--ink); }
+  .nav-tab.active { color:var(--terracotta); border-bottom-color:var(--terracotta); }
+  .nav-tab .tab-icon { margin-right:0.35rem; }
+  .main { padding:1.2rem 1rem 6rem; max-width:600px; margin:0 auto; }
+  .section { display:none; } .section.active { display:block; }
+  .card { background:var(--white); border-radius:var(--radius); padding:1.5rem; margin-bottom:1rem; box-shadow:0 1px 3px var(--shadow); border:1px solid rgba(0,0,0,0.04); }
+  .card-label { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--terracotta); margin-bottom:0.6rem; }
+  .card h3 { font-family:'Playfair Display',serif; font-size:1.2rem; margin-bottom:0.5rem; }
+  .card p { font-size:0.88rem; line-height:1.6; color:var(--ink-light); }
+  .phrase-item { display:flex; align-items:flex-start; gap:0.8rem; padding:0.9rem 0; border-bottom:1px solid var(--cream-dark); }
+  .phrase-item:last-child { border-bottom:none; }
+  .phrase-play { flex:none; width:36px; height:36px; border-radius:50%; background:var(--cream); border:1.5px solid var(--cream-dark); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.15s; color:var(--terracotta); font-size:0.9rem; }
+  .phrase-play:hover { background:var(--terracotta); color:var(--white); border-color:var(--terracotta); transform:scale(1.05); }
+  .phrase-play.playing { background:var(--terracotta); color:var(--white); border-color:var(--terracotta); animation:pulse 0.8s ease infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(196,87,42,0.3);} 50%{box-shadow:0 0 0 6px rgba(196,87,42,0);} }
+  .phrase-text { flex:1; }
+  .phrase-italian { font-family:'Playfair Display',serif; font-size:1.05rem; color:var(--ink); margin-bottom:0.15rem; }
+  .phrase-english { font-size:0.8rem; color:var(--ink-light); }
+  .phrase-context { font-size:0.72rem; color:var(--olive); font-style:italic; margin-top:0.15rem; }
+  .drill-container { text-align:center; padding:1rem 0; }
+  .drill-prompt { font-family:'Playfair Display',serif; font-size:1.6rem; margin-bottom:0.3rem; min-height:2.2rem; }
+  .drill-sub { font-size:0.85rem; color:var(--ink-light); margin-bottom:1.5rem; }
+  .drill-options { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:1.2rem; }
+  .drill-btn { padding:0.9rem 0.5rem; border-radius:var(--radius); border:1.5px solid var(--cream-dark); background:var(--white); font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.15s; color:var(--ink); }
+  .drill-btn:hover { border-color:var(--terracotta); background:#FFF8F5; }
+  .drill-btn.correct { background:var(--correct); color:var(--white); border-color:var(--correct); }
+  .drill-btn.incorrect { background:var(--incorrect); color:var(--white); border-color:var(--incorrect); }
+  .drill-btn:disabled { cursor:default; opacity:0.6; }
+  .drill-score { display:flex; justify-content:center; gap:2rem; font-size:0.8rem; color:var(--ink-light); margin-top:0.5rem; }
+  .drill-score span { font-weight:600; } .score-correct span { color:var(--correct); } .score-incorrect span { color:var(--incorrect); }
+  .drill-hear-btn { display:inline-flex; align-items:center; gap:0.4rem; padding:0.5rem 1.2rem; border-radius:20px; background:var(--cream); border:1.5px solid var(--cream-dark); font-size:0.82rem; cursor:pointer; color:var(--terracotta); font-weight:500; margin-bottom:1rem; transition:all 0.15s; }
+  .drill-hear-btn:hover { background:var(--terracotta); color:var(--white); border-color:var(--terracotta); }
+  .dialogue-container { padding:0.5rem 0; }
+  .dialogue-line { display:flex; gap:0.6rem; margin-bottom:0.8rem; align-items:flex-start; }
+  .dialogue-line.you { flex-direction:row-reverse; }
+  .dialogue-avatar { flex:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; }
+  .dialogue-line.them .dialogue-avatar { background:var(--olive-light); color:var(--white); }
+  .dialogue-line.you .dialogue-avatar { background:var(--terracotta); color:var(--white); }
+  .dialogue-bubble { max-width:80%; padding:0.7rem 1rem; border-radius:14px; font-size:0.9rem; line-height:1.5; cursor:pointer; transition:all 0.1s; }
+  .dialogue-bubble:hover { transform:scale(1.01); }
+  .dialogue-line.them .dialogue-bubble { background:var(--cream); border-bottom-left-radius:4px; }
+  .dialogue-line.you .dialogue-bubble { background:#FFF0E8; border-bottom-right-radius:4px; }
+  .dialogue-bubble .en { font-size:0.75rem; color:var(--ink-light); margin-top:0.2rem; display:block; }
+  .dialogue-bubble .tap-hint { font-size:0.65rem; color:var(--terracotta-light); margin-top:0.15rem; display:block; opacity:0.7; }
+  .mode-toggle { display:flex; background:var(--cream); border-radius:8px; padding:3px; margin-bottom:1rem; }
+  .mode-btn { flex:1; padding:0.5rem; border:none; background:transparent; border-radius:6px; font-size:0.78rem; font-weight:500; cursor:pointer; color:var(--ink-light); transition:all 0.15s; font-family:'DM Sans',sans-serif; }
+  .mode-btn.active { background:var(--white); color:var(--terracotta); box-shadow:0 1px 3px var(--shadow); }
+  .speed-control { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-bottom:1rem; font-size:0.75rem; color:var(--ink-light); }
+  .speed-btn,.speed-btn-grid { padding:0.3rem 0.7rem; border-radius:6px; border:1px solid var(--cream-dark); background:var(--white); font-size:0.72rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.1s; }
+  .speed-btn.active,.speed-btn-grid.active { background:var(--terracotta); color:var(--white); border-color:var(--terracotta); }
+  .streak-badge { display:inline-flex; align-items:center; gap:0.3rem; background:linear-gradient(135deg,var(--gold),#D4B96A); color:var(--ink); padding:0.25rem 0.7rem; border-radius:20px; font-size:0.72rem; font-weight:600; margin-bottom:0.8rem; }
+  .audio-warning { background:#FFF3E0; border:1px solid #FFE0B2; border-radius:8px; padding:0.7rem 1rem; font-size:0.78rem; color:#E65100; margin-bottom:1rem; display:none; }
+  .num-grid { display:grid; grid-template-columns:repeat(10,1fr); gap:4px; margin-bottom:1rem; }
+  .num-cell { aspect-ratio:1; display:flex; align-items:center; justify-content:center; background:var(--white); border:1px solid var(--cream-dark); border-radius:6px; font-size:0.82rem; font-weight:500; color:var(--ink); cursor:pointer; transition:all 0.12s; user-select:none; }
+  .num-cell:hover { background:#FFF0E8; border-color:var(--terracotta-light); transform:scale(1.08); z-index:1; }
+  .num-cell:active { transform:scale(0.95); }
+  .num-cell.heard { background:var(--olive); color:var(--white); border-color:var(--olive); }
+  .num-cell.heard:hover { background:var(--olive-light); border-color:var(--olive-light); }
+  .num-card-overlay { position:fixed; inset:0; background:rgba(44,36,32,0.4); z-index:100; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+  .num-card-overlay.visible { opacity:1; pointer-events:auto; }
+  .num-card-inner { background:var(--white); border-radius:16px; padding:2rem 2.5rem; text-align:center; box-shadow:0 12px 40px rgba(44,36,32,0.25); transform:scale(0.9); transition:transform 0.2s; min-width:240px; max-width:320px; }
+  .num-card-overlay.visible .num-card-inner { transform:scale(1); }
+  .num-card-number { font-family:'Playfair Display',serif; font-size:3.5rem; font-weight:700; color:var(--terracotta); line-height:1; margin-bottom:0.3rem; }
+  .num-card-italian { font-family:'Playfair Display',serif; font-size:1.5rem; font-style:italic; color:var(--ink); margin-bottom:1.2rem; }
+  .num-card-hear { display:inline-flex; align-items:center; gap:0.5rem; padding:0.7rem 1.8rem; border-radius:25px; background:var(--terracotta); color:var(--white); border:none; font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.15s; margin-bottom:0.8rem; }
+  .num-card-hear:hover { background:var(--terracotta-light); transform:scale(1.03); }
+  .num-card-close { display:block; margin:0 auto; padding:0.4rem 1rem; border:none; background:transparent; color:var(--ink-light); font-size:0.8rem; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .num-card-close:hover { color:var(--ink); }
+  .grid-progress { text-align:center; font-size:0.78rem; color:var(--ink-light); margin-top:0.3rem; }
+  .grid-progress span { font-weight:600; color:var(--olive); }
+  @media (max-width:400px) { .header h1{font-size:1.5rem;} .drill-options{grid-template-columns:1fr;} .num-grid{gap:2px;} .num-cell{font-size:0.7rem;border-radius:4px;} }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Italiano <em>in Due Settimane</em></h1>
+  <p>Situational Italian for your trip</p>
+  <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
+  <div class="progress-label" id="progressLabel">0 phrases practiced</div>
+</div>
+<div class="nav" id="nav">
+  <div class="nav-tab active" data-tab="numbers"><span class="tab-icon">&#x1F522;</span>Numbers</div>
+  <div class="nav-tab" data-tab="grid"><span class="tab-icon">&#x1F532;</span>1-100</div>
+  <div class="nav-tab" data-tab="cafe"><span class="tab-icon">&#x2615;</span>Cafe</div>
+  <div class="nav-tab" data-tab="restaurant"><span class="tab-icon">&#x1F35D;</span>Restaurant</div>
+  <div class="nav-tab" data-tab="transport"><span class="tab-icon">&#x1F682;</span>Transport</div>
+  <div class="nav-tab" data-tab="shopping"><span class="tab-icon">&#x1F6D2;</span>Shopping</div>
+</div>
+<div class="audio-warning" id="audioWarning">Audio requires an Italian voice on your device. Try Chrome for best results.</div>
+<div class="main">
+  <div class="section active" id="sec-numbers">
+    <div class="card"><div class="card-label">Number Drills</div><h3>Master the numbers first</h3><p>Numbers unlock prices, quantities, times, and table sizes. Drill them until automatic.</p></div>
+    <div class="mode-toggle" id="numModeToggle">
+      <button class="mode-btn active" data-mode="basic">1-20</button>
+      <button class="mode-btn" data-mode="tens">Tens</button>
+      <button class="mode-btn" data-mode="prices">Prices</button>
+      <button class="mode-btn" data-mode="situational">In Context</button>
+    </div>
+    <div class="speed-control"><span>Speed:</span><button class="speed-btn active" data-rate="0.7">Slow</button><button class="speed-btn" data-rate="1">Normal</button><button class="speed-btn" data-rate="1.3">Fast</button></div>
+    <div class="card" id="numberDrill"><div class="drill-container">
+      <div id="streakBadge" class="streak-badge" style="display:none">&#x1F525; <span id="streakCount">0</span> streak</div>
+      <div class="drill-prompt" id="drillPrompt">-</div>
+      <div class="drill-sub" id="drillSub"></div>
+      <button class="drill-hear-btn" id="drillHear" onclick="hearDrill()">&#9654; Hear it</button>
+      <div class="drill-options" id="drillOptions"></div>
+      <div class="drill-score"><div class="score-correct">Correct: <span id="scoreCorrect">0</span></div><div class="score-incorrect">Missed: <span id="scoreIncorrect">0</span></div></div>
+    </div></div>
+  </div>
+  <div class="section" id="sec-grid">
+    <div class="card"><div class="card-label">Reference Grid</div><h3>Tap any number to see &amp; hear it</h3><p>Click a number, see the Italian, hear pronunciation. Green = heard. Try 1-20, then jump around.</p></div>
+    <div class="speed-control"><span>Speed:</span><button class="speed-btn-grid active" data-rate="0.7" onclick="setGridSpeed(this)">Slow</button><button class="speed-btn-grid" data-rate="1" onclick="setGridSpeed(this)">Normal</button><button class="speed-btn-grid" data-rate="1.3" onclick="setGridSpeed(this)">Fast</button></div>
+    <div class="card" style="padding:1rem;"><div class="num-grid" id="numGrid"></div><div class="grid-progress">Heard: <span id="gridHeardCount">0</span> / 100</div></div>
+  </div>
+  <div class="num-card-overlay" id="numCardOverlay" onclick="closeNumCard(event)">
+    <div class="num-card-inner" onclick="event.stopPropagation()">
+      <div class="num-card-number" id="numCardNumber">7</div>
+      <div class="num-card-italian" id="numCardItalian">sette</div>
+      <button class="num-card-hear" onclick="speakNumCard()">&#9654; Hear it</button>
+      <button class="num-card-close" onclick="closeNumCard()">close</button>
+    </div>
+  </div>
+  <div class="section" id="sec-cafe">
+    <div class="card"><div class="card-label">Morning Ritual</div><h3>At the cafe - Il Bar</h3><p>Your first interaction every day. Order at the counter, keep it quick, say buongiorno. Tap any phrase to hear it.</p></div>
+    <div class="mode-toggle" id="cafeModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
+    <div id="cafeContent"></div>
+  </div>
+  <div class="section" id="sec-restaurant">
+    <div class="card"><div class="card-label">Dinner Time</div><h3>At the restaurant - Al Ristorante</h3><p>Getting a table, ordering food and wine, asking for the bill. Tap any phrase to hear it.</p></div>
+    <div class="mode-toggle" id="restaurantModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
+    <div id="restaurantContent"></div>
+  </div>
+  <div class="section" id="sec-transport">
+    <div class="card"><div class="card-label">Getting Around</div><h3>Trains, taxis &amp; directions</h3><p>Buy tickets, find your platform, and ask for directions. Tap to hear.</p></div>
+    <div class="mode-toggle" id="transportModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
+    <div id="transportContent"></div>
+  </div>
+  <div class="section" id="sec-shopping">
+    <div class="card"><div class="card-label">Markets &amp; Shops</div><h3>Shopping - Al Mercato</h3><p>Navigate markets, ask prices, buy gelato, handle quantities. Tap to hear.</p></div>
+    <div class="mode-toggle" id="shoppingModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
+    <div id="shoppingContent"></div>
+  </div>
+</div>
+<script>
+var NUMBERS = {
+  basic: [[0,'zero'],[1,'uno'],[2,'due'],[3,'tre'],[4,'quattro'],[5,'cinque'],[6,'sei'],[7,'sette'],[8,'otto'],[9,'nove'],[10,'dieci'],[11,'undici'],[12,'dodici'],[13,'tredici'],[14,'quattordici'],[15,'quindici'],[16,'sedici'],[17,'diciassette'],[18,'diciotto'],[19,'diciannove'],[20,'venti']],
+  tens: [[20,'venti'],[21,'ventuno'],[25,'venticinque'],[28,'ventotto'],[30,'trenta'],[33,'trentatre'],[40,'quaranta'],[45,'quarantacinque'],[50,'cinquanta'],[60,'sessanta'],[70,'settanta'],[80,'ottanta'],[90,'novanta'],[100,'cento']],
+  prices: [['E1.20','un euro e venti','A coffee'],['E3.50','tre euro e cinquanta','A gelato'],['E12','dodici euro','Plate of pasta'],['E8.70','otto euro e settanta','Fruit at market'],['E2','due euro','Bus ticket'],['E15','quindici euro','Taxi ride'],['E45','quarantacinque euro','Leather belt'],['E6.50','sei euro e cinquanta','Glass of wine'],['E1.50','un euro e cinquanta','Bottle of water'],['E25','venticinque euro','Museum ticket']],
+  situational: [
+    {prompt:'The host asks how many. You say: "Two of us."', answer:'Siamo in due.', wrong:['Siamo in tre.','Due persone qui.','Tavolo due.']},
+    {prompt:'"Table for 3, please."', answer:'Un tavolo per tre, per favore.', wrong:['Tre tavolo, grazie.','Tavolo tre persone.','Per tre un tavolo.']},
+    {prompt:'"Two coffees, please."', answer:'Due caffe, per favore.', wrong:['Caffe due, grazie.','Due un caffe.','Voglio caffe due.']},
+    {prompt:'"What time does it leave?"', answer:'A che ora parte?', wrong:['Quando va?','Che tempo parte?','Ora parte quando?']},
+    {prompt:'"It costs 15 euros."', answer:'Costa quindici euro.', wrong:['Quindici costa euro.','E quindici.','Euro quindici costa.']},
+    {prompt:'"Platform 7."', answer:'Binario sette.', wrong:['Piattaforma sette.','Sette binario.','Treno sette.']},
+    {prompt:'"Half a kilo of strawberries."', answer:'Mezzo chilo di fragole.', wrong:['Un mezzo fragole.','Fragole mezzo.','Chilo mezzo fragole.']},
+    {prompt:'"How much total?"', answer:'Quant\'e in tutto?', wrong:['Tutto quanto costa?','In tutto quanti?','Quanto e tutto?']}
+  ]
+};
+var SCENARIOS = {
+  cafe: {
+    phrases: [
+      {it:'Buongiorno!', en:'Good morning!', ctx:'Always greet when entering'},
+      {it:'Un caffe, per favore.', en:'An espresso, please.', ctx:'caffe = espresso in Italy'},
+      {it:'Un cappuccino, per favore.', en:'A cappuccino, please.', ctx:'Only in the morning!'},
+      {it:'Un caffe macchiato.', en:'Espresso with a dash of milk.', ctx:'macchiato = stained'},
+      {it:'Un cornetto alla crema.', en:'A cream-filled croissant.', ctx:'The Italian breakfast'},
+      {it:'Caldo o freddo?', en:'Hot or cold?', ctx:'Barista asks in summer'},
+      {it:'Da portare via.', en:'To go / takeaway.', ctx:'For walking with your coffee'},
+      {it:'Qui al banco.', en:'Here at the counter.', ctx:'Cheaper than sitting at a table'},
+      {it:'Quant\'e?', en:'How much is it?', ctx:'Quick way to ask the price'},
+      {it:'Posso pagare con la carta?', en:'Can I pay by card?', ctx:'Many bars are cash-only'}
+    ],
+    dialogue: [
+      {speaker:'them', name:'Barista', it:'Buongiorno! Dica.', en:'Good morning! What can I get you?'},
+      {speaker:'you', name:'You', it:'Buongiorno! Un cappuccino e un cornetto, per favore.', en:'A cappuccino and a croissant, please.'},
+      {speaker:'them', name:'Barista', it:'Il cornetto alla crema o vuoto?', en:'Cream-filled or plain?'},
+      {speaker:'you', name:'You', it:'Alla crema, grazie.', en:'Cream-filled, thanks.'},
+      {speaker:'them', name:'Barista', it:'Ecco a lei. Sono tre euro e venti.', en:'Here you go. Three euros twenty.'},
+      {speaker:'you', name:'You', it:'Posso pagare con la carta?', en:'Can I pay by card?'},
+      {speaker:'them', name:'Barista', it:'Certo! Prego.', en:'Of course! Go ahead.'},
+      {speaker:'you', name:'You', it:'Grazie, buona giornata!', en:'Thanks, have a good day!'}
+    ],
+    quiz: [
+      {q:'How do you order an espresso?', a:'Un caffe, per favore.', wrong:['Un espresso, per favore.','Caffe uno grazie.','Vorrei un latte.']},
+      {q:'You want to pay by card:', a:'Posso pagare con la carta?', wrong:['Carta per favore.','Pago carta.','Dove la carta?']},
+      {q:'You want your coffee to go:', a:'Da portare via.', wrong:['Via portare.','Per andare.','Prendo via.']},
+      {q:'How much is it?', a:'Quant\'e?', wrong:['Quanto pago?','Che costa?','Prezzo?']}
+    ]
+  },
+  restaurant: {
+    phrases: [
+      {it:'Buonasera, avete un tavolo per due?', en:'Good evening, table for two?', ctx:'Evening greeting + request'},
+      {it:'Abbiamo prenotato.', en:'We have a reservation.', ctx:'If you booked ahead'},
+      {it:'Avete un tavolo fuori?', en:'Table outside?', ctx:'Al fresco dining'},
+      {it:'Possiamo ordinare?', en:'Can we order?', ctx:'Get the waiter\'s attention'},
+      {it:'Cosa ci consiglia?', en:'What do you recommend?', ctx:'Italians love this question'},
+      {it:'Per me, la carbonara.', en:'For me, the carbonara.', ctx:'Simple ordering pattern'},
+      {it:'Una bottiglia d\'acqua naturale.', en:'A bottle of still water.', ctx:'naturale=still, frizzante=sparkling'},
+      {it:'E buonissimo!', en:'It\'s delicious!', ctx:'Compliment the food!'},
+      {it:'Il conto, per favore.', en:'The check, please.', ctx:'They won\'t bring it until you ask'},
+      {it:'Tenga il resto.', en:'Keep the change.', ctx:'Tipping not expected but nice'}
+    ],
+    dialogue: [
+      {speaker:'them', name:'Host', it:'Buonasera! Quanti siete?', en:'Good evening! How many?'},
+      {speaker:'you', name:'You', it:'Buonasera! Siamo in tre.', en:'Good evening! Three of us.'},
+      {speaker:'them', name:'Host', it:'Avete prenotato?', en:'Do you have a reservation?'},
+      {speaker:'you', name:'You', it:'No, non abbiamo prenotato. C\'e posto?', en:'No. Is there space?'},
+      {speaker:'them', name:'Host', it:'Si, seguitemi. Dentro o fuori?', en:'Yes, follow me. Inside or outside?'},
+      {speaker:'you', name:'You', it:'Fuori, per favore.', en:'Outside, please.'},
+      {speaker:'them', name:'Waiter', it:'Ecco il menu. Volete ordinare da bere?', en:'Here\'s the menu. Drinks?'},
+      {speaker:'you', name:'You', it:'Una bottiglia di vino rosso della casa.', en:'A bottle of house red.'},
+      {speaker:'them', name:'Waiter', it:'Avete scelto?', en:'Have you decided?'},
+      {speaker:'you', name:'You', it:'Si. Per me, gli spaghetti alla carbonara.', en:'Yes. Spaghetti carbonara for me.'},
+      {speaker:'you', name:'You', it:'Il conto, per favore.', en:'The check, please.'},
+      {speaker:'them', name:'Waiter', it:'Sono quarantacinque euro in tutto.', en:'45 euros total.'}
+    ],
+    quiz: [
+      {q:'Host asks "Quanti siete?" You are 4:', a:'Siamo in quattro.', wrong:['Quattro persone.','Noi quattro.','Tavolo quattro.']},
+      {q:'Ask for the check:', a:'Il conto, per favore.', wrong:['Pago adesso.','Voglio pagare.','Conto!']},
+      {q:'Order still water:', a:'Una bottiglia d\'acqua naturale.', wrong:['Acqua per favore.','Acqua normale.','Una acqua grande.']},
+      {q:'Say it\'s delicious:', a:'E buonissimo!', wrong:['Molto buono.','Mi piace cibo.','Bello mangiare.']}
+    ]
+  },
+  transport: {
+    phrases: [
+      {it:'Mi porti alla stazione, per favore.', en:'Take me to the station.', ctx:'In a taxi'},
+      {it:'Quanto tempo ci vuole?', en:'How long will it take?', ctx:'Essential for planning'},
+      {it:'Vorrei un biglietto per Firenze.', en:'A ticket to Florence.', ctx:'At the ticket counter'},
+      {it:'Andata e ritorno.', en:'Round trip.', ctx:'vs. solo andata = one way'},
+      {it:'A che ora parte il prossimo treno?', en:'When does the next train leave?', ctx:'Key station question'},
+      {it:'Da che binario parte?', en:'Which platform?', ctx:'binario = platform'},
+      {it:'Scusi, questo posto e libero?', en:'Is this seat free?', ctx:'On the train'},
+      {it:'Scusi, dov\'e la fermata dell\'autobus?', en:'Where is the bus stop?', ctx:'Asking directions'},
+      {it:'Vada dritto, poi giri a destra.', en:'Go straight, then turn right.', ctx:'Direction you\'ll hear'},
+      {it:'Mi sono perso.', en:'I\'m lost.', ctx:'Emergency phrase'}
+    ],
+    dialogue: [
+      {speaker:'you', name:'You', it:'Buongiorno! Vorrei due biglietti per Roma.', en:'Two tickets to Rome, please.'},
+      {speaker:'them', name:'Clerk', it:'Solo andata o andata e ritorno?', en:'One way or round trip?'},
+      {speaker:'you', name:'You', it:'Solo andata, per favore.', en:'One way, please.'},
+      {speaker:'them', name:'Clerk', it:'Prima classe o seconda classe?', en:'First or second class?'},
+      {speaker:'you', name:'You', it:'Seconda classe.', en:'Second class.'},
+      {speaker:'them', name:'Clerk', it:'Sono trentadue euro. Binario cinque, alle undici e quindici.', en:'32 euros. Platform 5, at 11:15.'},
+      {speaker:'you', name:'You', it:'Grazie! Dov\'e il binario cinque?', en:'Thanks! Where is platform 5?'},
+      {speaker:'them', name:'Clerk', it:'Dritto e poi a sinistra.', en:'Straight, then left.'}
+    ],
+    quiz: [
+      {q:'Ask which platform:', a:'Da che binario parte?', wrong:['Quale piattaforma?','Binario dove?','Dove treno va?']},
+      {q:'Say round trip:', a:'Andata e ritorno.', wrong:['Due vie.','Vai e torni.','Ritorno andata.']},
+      {q:'You are lost:', a:'Mi sono perso.', wrong:['Sono perduto.','Non so dove.','Perso sono.']},
+      {q:'How long will it take?', a:'Quanto tempo ci vuole?', wrong:['Quanto lungo?','Tempo quanto?','Come lungo e?']}
+    ]
+  },
+  shopping: {
+    phrases: [
+      {it:'Vorrei dei pomodori.', en:'I\'d like some tomatoes.', ctx:'At a market stall'},
+      {it:'Un chilo di pesche, per favore.', en:'A kilo of peaches.', ctx:'Standard quantity'},
+      {it:'Mezzo chilo di fragole.', en:'Half a kilo of strawberries.', ctx:'mezzo = half'},
+      {it:'Un etto di prosciutto crudo.', en:'100g of prosciutto.', ctx:'Un etto = 100g'},
+      {it:'Quanto costa?', en:'How much does it cost?', ctx:'The essential question'},
+      {it:'Basta cosi, grazie.', en:'That\'s enough, thanks.', ctx:'When they\'re weighing'},
+      {it:'Lo prendo.', en:'I\'ll take it.', ctx:'When you\'ve decided'},
+      {it:'Sto solo guardando, grazie.', en:'Just looking, thanks.', ctx:'Browsing in shops'},
+      {it:'Un cono con due gusti.', en:'A cone with two flavors.', ctx:'At the gelateria'},
+      {it:'Posso assaggiare il pistacchio?', en:'Can I taste the pistachio?', ctx:'Gelato shops let you sample!'}
+    ],
+    dialogue: [
+      {speaker:'them', name:'Vendor', it:'Buongiorno! Dica!', en:'Good morning! What\'ll it be?'},
+      {speaker:'you', name:'You', it:'Buongiorno! Vorrei un chilo di pomodori.', en:'A kilo of tomatoes, please.'},
+      {speaker:'them', name:'Vendor', it:'Ecco. Altro?', en:'Here you go. Anything else?'},
+      {speaker:'you', name:'You', it:'Si, mezzo chilo di fragole e due etti di parmigiano.', en:'Half kilo strawberries, 200g parmesan.'},
+      {speaker:'them', name:'Vendor', it:'Perfetto. Basta cosi?', en:'Perfect. That all?'},
+      {speaker:'you', name:'You', it:'Si, basta cosi. Quant\'e in tutto?', en:'Yes. How much total?'},
+      {speaker:'them', name:'Vendor', it:'Sono undici euro e venti.', en:'Eleven euros twenty.'},
+      {speaker:'you', name:'You', it:'Ecco. Grazie mille!', en:'Here you go. Thank you!'},
+      {speaker:'them', name:'Vendor', it:'Grazie a lei! Buona giornata!', en:'Thank you! Have a good day!'}
+    ],
+    quiz: [
+      {q:'Ask the price:', a:'Quanto costa?', wrong:['Che prezzo?','Soldi quanto?','Costa che?']},
+      {q:'Order 100g of prosciutto:', a:'Un etto di prosciutto crudo.', wrong:['Cento grammi prosciutto.','Prosciutto un pezzo.','Un poco prosciutto.']},
+      {q:'Say that\'s enough:', a:'Basta cosi, grazie.', wrong:['Finito grazie.','Stop per favore.','No piu.']},
+      {q:'Just browsing:', a:'Sto solo guardando, grazie.', wrong:['Solo guardo.','Non compro.','Guardando solo.']}
+    ]
+  }
+};
+var NUM_WORDS = {
+  0:'zero',1:'uno',2:'due',3:'tre',4:'quattro',5:'cinque',6:'sei',7:'sette',
+  8:'otto',9:'nove',10:'dieci',11:'undici',12:'dodici',13:'tredici',
+  14:'quattordici',15:'quindici',16:'sedici',17:'diciassette',18:'diciotto',
+  19:'diciannove',20:'venti',21:'ventuno',22:'ventidue',23:'ventitre',
+  24:'ventiquattro',25:'venticinque',26:'ventisei',27:'ventisette',28:'ventotto',
+  29:'ventinove',30:'trenta',31:'trentuno',32:'trentadue',33:'trentatre',
+  34:'trentaquattro',35:'trentacinque',36:'trentasei',37:'trentasette',
+  38:'trentotto',39:'trentanove',40:'quaranta',41:'quarantuno',42:'quarantadue',
+  43:'quarantatre',44:'quarantaquattro',45:'quarantacinque',46:'quarantasei',
+  47:'quarantasette',48:'quarantotto',49:'quarantanove',50:'cinquanta',
+  51:'cinquantuno',52:'cinquantadue',53:'cinquantatre',54:'cinquantaquattro',
+  55:'cinquantacinque',56:'cinquantasei',57:'cinquantasette',58:'cinquantotto',
+  59:'cinquantanove',60:'sessanta',61:'sessantuno',62:'sessantadue',
+  63:'sessantatre',64:'sessantaquattro',65:'sessantacinque',66:'sessantasei',
+  67:'sessantasette',68:'sessantotto',69:'sessantanove',70:'settanta',
+  71:'settantuno',72:'settantadue',73:'settantatre',74:'settantaquattro',
+  75:'settantacinque',76:'settantasei',77:'settantasette',78:'settantotto',
+  79:'settantanove',80:'ottanta',81:'ottantuno',82:'ottantadue',83:'ottantatre',
+  84:'ottantaquattro',85:'ottantacinque',86:'ottantasei',87:'ottantasette',
+  88:'ottantotto',89:'ottantanove',90:'novanta',91:'novantuno',92:'novantadue',
+  93:'novantatre',94:'novantaquattro',95:'novantacinque',96:'novantasei',
+  97:'novantasette',98:'novantotto',99:'novantanove',100:'cento'
+};
+var state = {
+  currentTab:'numbers', numMode:'basic', speechRate:0.7,
+  score:{correct:0,incorrect:0}, streak:0, practiced:new Set(),
+  currentDrill:null,
+  scenarioModes:{cafe:'phrases',restaurant:'phrases',transport:'phrases',shopping:'phrases'},
+  italianVoice:null, audioAvailable:false
+};
+function initSpeech() {
+  if (!('speechSynthesis' in window)) { document.getElementById('audioWarning').style.display='block'; return; }
+  function loadVoices() {
+    var voices = speechSynthesis.getVoices();
+    state.italianVoice = voices.find(function(v){return v.lang.indexOf('it')===0;}) || null;
+    state.audioAvailable = !!state.italianVoice;
+    if (!state.audioAvailable && voices.length > 0) document.getElementById('audioWarning').style.display='block';
+  }
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+function speak(text, rate) {
+  if (!state.audioAvailable) return null;
+  speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.voice = state.italianVoice; u.lang = 'it-IT'; u.rate = rate || state.speechRate; u.pitch = 1;
+  speechSynthesis.speak(u);
+  return u;
+}
+document.getElementById('nav').addEventListener('click', function(e) {
+  var tab = e.target.closest('.nav-tab');
+  if (!tab) return;
+  var id = tab.dataset.tab;
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  tab.classList.add('active');
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('sec-'+id).classList.add('active');
+  state.currentTab = id;
+  if (id!=='numbers' && id!=='grid') renderScenario(id);
+});
+document.querySelectorAll('.mode-toggle').forEach(function(toggle) {
+  toggle.addEventListener('click', function(e) {
+    var btn = e.target.closest('.mode-btn');
+    if (!btn) return;
+    toggle.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    var mode = btn.dataset.mode;
+    var section = toggle.id.replace('ModeToggle','');
+    if (section==='num') { state.numMode=mode; newDrill(); }
+    else { state.scenarioModes[section]=mode; renderScenario(section); }
+  });
+});
+document.querySelectorAll('.speed-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.speed-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    state.speechRate = parseFloat(btn.dataset.rate);
+  });
+});
+function shuffle(arr) {
+  var a=arr.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a;
+}
+function pickRandom(arr,n,exclude) { return shuffle(arr.filter(function(x){return x!==exclude;})).slice(0,n); }
+function escQ(s) { return String(s).replace(/'/g,"\\'"); }
+function newDrill() {
+  var mode=state.numMode, prompt=document.getElementById('drillPrompt'), sub=document.getElementById('drillSub'), opts=document.getElementById('drillOptions'), hearBtn=document.getElementById('drillHear');
+  if (mode==='basic'||mode==='tens') {
+    var pool=NUMBERS[mode], item=pool[Math.floor(Math.random()*pool.length)], num=item[0], word=item[1];
+    if (Math.random()>0.5) {
+      prompt.textContent=num; sub.textContent='What is this number in Italian?';
+      var ww=pickRandom(pool.map(function(p){return p[1];}),3,word), oo=shuffle([word].concat(ww));
+      state.currentDrill={answer:word,speakText:word}; hearBtn.style.display='inline-flex';
+      opts.innerHTML=oo.map(function(o){return '<button class="drill-btn" onclick="checkDrill(this,\''+escQ(o)+'\',\''+escQ(word)+'\')">'+o+'</button>';}).join('');
+    } else {
+      prompt.textContent=word; sub.textContent='What number is this?';
+      var wn=pickRandom(pool.map(function(p){return p[0];}),3,num), on=shuffle([num].concat(wn));
+      state.currentDrill={answer:num,speakText:word}; hearBtn.style.display='inline-flex';
+      opts.innerHTML=on.map(function(o){return '<button class="drill-btn" onclick="checkDrill(this,'+o+','+num+')">'+o+'</button>';}).join('');
+    }
+  } else if (mode==='prices') {
+    var pp=NUMBERS.prices, pi=pp[Math.floor(Math.random()*pp.length)];
+    prompt.textContent=pi[0]; sub.textContent=pi[2];
+    var wi=pickRandom(pp.map(function(p){return p[1];}),3,pi[1]), oi=shuffle([pi[1]].concat(wi));
+    state.currentDrill={answer:pi[1],speakText:pi[1]}; hearBtn.style.display='inline-flex';
+    opts.innerHTML=oi.map(function(o){return '<button class="drill-btn" onclick="checkDrill(this,\''+escQ(o)+'\',\''+escQ(pi[1])+'\')">'+o+'</button>';}).join('');
+  } else if (mode==='situational') {
+    var sp=NUMBERS.situational, si=sp[Math.floor(Math.random()*sp.length)];
+    prompt.innerHTML='&#x1F4AC;'; sub.textContent=si.prompt;
+    var so=shuffle([si.answer].concat(si.wrong.slice(0,3)));
+    state.currentDrill={answer:si.answer,speakText:si.answer}; hearBtn.style.display='inline-flex';
+    opts.innerHTML=so.map(function(o){return '<button class="drill-btn" onclick="checkDrill(this,\''+escQ(o)+'\',\''+escQ(si.answer)+'\')">'+o+'</button>';}).join('');
+  }
+}
+function checkDrill(btn,selected,correct) {
+  var ok=String(selected)===String(correct);
+  document.querySelectorAll('.drill-btn').forEach(function(b){b.disabled=true;if(b.textContent===String(correct))b.classList.add('correct');});
+  if(!ok){btn.classList.add('incorrect');state.score.incorrect++;state.streak=0;}
+  else{state.score.correct++;state.streak++;state.practiced.add(correct);}
+  document.getElementById('scoreCorrect').textContent=state.score.correct;
+  document.getElementById('scoreIncorrect').textContent=state.score.incorrect;
+  updateStreak(); updateProgress();
+  if(state.currentDrill)speak(state.currentDrill.speakText);
+  setTimeout(newDrill,ok?1200:2000);
+}
+function hearDrill(){if(state.currentDrill)speak(state.currentDrill.speakText);}
+function updateStreak(){var b=document.getElementById('streakBadge'),c=document.getElementById('streakCount');if(state.streak>=3){b.style.display='inline-flex';c.textContent=state.streak;}else{b.style.display='none';}}
+function updateProgress(){var t=state.practiced.size,pct=Math.min(100,(t/120)*100);document.getElementById('progressBar').style.width=pct+'%';document.getElementById('progressLabel').textContent=t+' phrases practiced';}
+function renderScenario(section) {
+  var mode=state.scenarioModes[section], data=SCENARIOS[section], c=document.getElementById(section+'Content');
+  if(mode==='phrases'){
+    c.innerHTML='<div class="card">'+data.phrases.map(function(p){
+      return '<div class="phrase-item"><button class="phrase-play" onclick="playPhrase(this,\''+escQ(p.it)+'\')">&#9654;</button><div class="phrase-text"><div class="phrase-italian">'+p.it+'</div><div class="phrase-english">'+p.en+'</div>'+(p.ctx?'<div class="phrase-context">'+p.ctx+'</div>':'')+'</div></div>';
+    }).join('')+'</div>';
+  } else if(mode==='dialogue'){
+    c.innerHTML='<div class="card"><div class="dialogue-container">'+data.dialogue.map(function(d){
+      return '<div class="dialogue-line '+d.speaker+'"><div class="dialogue-avatar">'+(d.speaker==='you'?'&#x1F9D1;':'&#x1F1EE;&#x1F1F9;')+'</div><div class="dialogue-bubble" onclick="speak(\''+escQ(d.it)+'\')"><strong>'+d.it+'</strong><span class="en">'+d.en+'</span><span class="tap-hint">tap to hear</span></div></div>';
+    }).join('')+'</div></div>';
+  } else if(mode==='quiz'){ renderScenarioQuiz(section,data.quiz,c); }
+}
+function renderScenarioQuiz(section,quizData,container){
+  var item=quizData[Math.floor(Math.random()*quizData.length)], opts=shuffle([item.a].concat(item.wrong));
+  container.innerHTML='<div class="card"><div class="drill-container"><div class="drill-prompt">&#x1F4AC;</div><div class="drill-sub">'+item.q+'</div><button class="drill-hear-btn" onclick="speak(\''+escQ(item.a)+'\')">&#9654; Hear answer</button><div class="drill-options">'+opts.map(function(o){return '<button class="drill-btn" onclick="checkScenarioQuiz(this,\''+escQ(o)+'\',\''+escQ(item.a)+'\',\''+section+'\')">'+o+'</button>';}).join('')+'</div></div></div>';
+}
+function checkScenarioQuiz(btn,selected,correct,section){
+  var ok=selected===correct;
+  btn.closest('.drill-options').querySelectorAll('.drill-btn').forEach(function(b){b.disabled=true;if(b.textContent===correct)b.classList.add('correct');});
+  if(!ok){btn.classList.add('incorrect');state.score.incorrect++;state.streak=0;}
+  else{state.score.correct++;state.streak++;state.practiced.add(correct);}
+  document.getElementById('scoreCorrect').textContent=state.score.correct;
+  document.getElementById('scoreIncorrect').textContent=state.score.incorrect;
+  updateStreak();updateProgress();speak(correct);
+  setTimeout(function(){renderScenarioQuiz(section,SCENARIOS[section].quiz,document.getElementById(section+'Content'));},ok?1200:2000);
+}
+function playPhrase(btn,text){
+  document.querySelectorAll('.phrase-play').forEach(function(b){b.classList.remove('playing');});
+  btn.classList.add('playing'); state.practiced.add(text); updateProgress();
+  var u=speak(text);
+  if(u){u.onend=function(){btn.classList.remove('playing');};setTimeout(function(){btn.classList.remove('playing');},5000);}
+  else{setTimeout(function(){btn.classList.remove('playing');},1000);}
+}
+var gridHeard=new Set(), gridSpeechRate=0.7, activeNumCard=null;
+function buildGrid(){
+  var g=document.getElementById('numGrid'),h='';
+  for(var i=1;i<=100;i++) h+='<div class="num-cell" data-num="'+i+'" onclick="openNumCard('+i+')">'+i+'</div>';
+  g.innerHTML=h;
+}
+function openNumCard(n){
+  activeNumCard=n;
+  document.getElementById('numCardNumber').textContent=n;
+  document.getElementById('numCardItalian').textContent=NUM_WORDS[n];
+  document.getElementById('numCardOverlay').classList.add('visible');
+  gridHeard.add(n);
+  var cell=document.querySelector('.num-cell[data-num="'+n+'"]');
+  if(cell)cell.classList.add('heard');
+  document.getElementById('gridHeardCount').textContent=gridHeard.size;
+  state.practiced.add(NUM_WORDS[n]); updateProgress();
+  speak(NUM_WORDS[n],gridSpeechRate);
+}
+function closeNumCard(e){
+  if(e&&e.target&&e.target!==document.getElementById('numCardOverlay')&&e.stopPropagation)return;
+  document.getElementById('numCardOverlay').classList.remove('visible'); activeNumCard=null;
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.getElementById('numCardOverlay').classList.remove('visible');activeNumCard=null;}});
+function speakNumCard(){if(activeNumCard!==null)speak(NUM_WORDS[activeNumCard],gridSpeechRate);}
+function setGridSpeed(btn){document.querySelectorAll('.speed-btn-grid').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');gridSpeechRate=parseFloat(btn.dataset.rate);}
+buildGrid();
+initSpeech();
+newDrill();
+</script>
+</body>
+</html>
