@@ -114,6 +114,10 @@
   <div class="nav-tab" data-tab="restaurant"><span class="tab-icon">&#x1F35D;</span>Restaurant</div>
   <div class="nav-tab" data-tab="transport"><span class="tab-icon">&#x1F682;</span>Transport</div>
   <div class="nav-tab" data-tab="shopping"><span class="tab-icon">&#x1F6D2;</span>Shopping</div>
+  <div class="nav-tab" data-tab="gelato"><span class="tab-icon">&#x1F366;</span>Gelato</div>
+  <div class="nav-tab" data-tab="brewpub"><span class="tab-icon">&#x1F37A;</span>Brewpub</div>
+  <div class="nav-tab" data-tab="lunch"><span class="tab-icon">&#x1F957;</span>Lunch</div>
+  <div class="nav-tab" data-tab="greetings"><span class="tab-icon">&#x1F44B;</span>Greetings</div>
 </div>
 <div class="audio-warning" id="audioWarning">Audio requires an Italian voice on your device. Try Chrome for best results.</div>
 <div class="main">
@@ -167,6 +171,26 @@
     <div class="card"><div class="card-label">Markets &amp; Shops</div><h3>Shopping - Al Mercato</h3><p>Navigate markets, ask prices, buy gelato, handle quantities. Tap to hear.</p></div>
     <div class="mode-toggle" id="shoppingModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
     <div id="shoppingContent"></div>
+  </div>
+  <div class="section" id="sec-gelato">
+    <div class="card"><div class="card-label">Sweet Stop</div><h3>At the gelateria</h3><p>Walk up to the counter, pick your flavors, choose cone or cup. A daily ritual in Italy.</p></div>
+    <div class="mode-toggle" id="gelatoModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
+    <div id="gelatoContent"></div>
+  </div>
+  <div class="section" id="sec-brewpub">
+    <div class="card"><div class="card-label">Craft Beer</div><h3>At the brewpub - Birrificio</h3><p>Italy has a booming craft beer scene. Order at the bar, ask what\'s on tap, try a flight.</p></div>
+    <div class="mode-toggle" id="brewpubModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
+    <div id="brewpubContent"></div>
+  </div>
+  <div class="section" id="sec-lunch">
+    <div class="card"><div class="card-label">Midday Meal</div><h3>Lunch out &amp; about</h3><p>Find a trattoria, grab a table outside, order house wine and a primo. Keep it simple and local.</p></div>
+    <div class="mode-toggle" id="lunchModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
+    <div id="lunchContent"></div>
+  </div>
+  <div class="section" id="sec-greetings">
+    <div class="card"><div class="card-label">Coming &amp; Going</div><h3>Common greetings &amp; sayings</h3><p>The phrases Italians use all day long -- arriving, leaving, thanking, wishing well. These make you sound like you belong.</p></div>
+    <div class="mode-toggle" id="greetingsModeToggle"><button class="mode-btn active" data-mode="phrases">Phrases</button><button class="mode-btn" data-mode="dialogue">Dialogue</button><button class="mode-btn" data-mode="quiz">Quiz</button></div>
+    <div id="greetingsContent"></div>
   </div>
 </div>
 <script>
@@ -310,6 +334,137 @@ var SCENARIOS = {
       {q:'Say that\'s enough:', a:'Basta cosi, grazie.', wrong:['Finito grazie.','Stop per favore.','No piu.']},
       {q:'Just browsing:', a:'Sto solo guardando, grazie.', wrong:['Solo guardo.','Non compro.','Guardando solo.']}
     ]
+  },
+  gelato: {
+    phrases: [
+      {it:'Che gusti avete?', en:'What flavors do you have?', ctx:'Start here -- scope out the display'},
+      {it:'Posso assaggiare?', en:'Can I taste?', ctx:'They expect this -- point and ask'},
+      {it:'Un cono piccolo, per favore.', en:'A small cone, please.', ctx:'piccolo = 2 flavors usually'},
+      {it:'Una coppetta media.', en:'A medium cup.', ctx:'coppetta = cup, media = medium'},
+      {it:'Vorrei cioccolato e pistacchio.', en:'I\'d like chocolate and pistachio.', ctx:'Name your flavors'},
+      {it:'Con panna?', en:'With cream?', ctx:'They\'ll ask -- say si!'},
+      {it:'Si, con panna, grazie!', en:'Yes, with cream, thanks!', ctx:'Whipped cream on top'},
+      {it:'No, senza panna.', en:'No, without cream.', ctx:'senza = without'},
+      {it:'Quant\'e?', en:'How much is it?', ctx:'Usually 2.50-5 euros'},
+      {it:'E buonissimo!', en:'It\'s delicious!', ctx:'Compliment their gelato'}
+    ],
+    dialogue: [
+      {speaker:'you', name:'You', it:'Buongiorno! Che gusti avete oggi?', en:'Hi! What flavors do you have today?'},
+      {speaker:'them', name:'Server', it:'Abbiamo tanti gusti! Vuole assaggiare qualcosa?', en:'We have many flavors! Want to taste something?'},
+      {speaker:'you', name:'You', it:'Si, posso assaggiare il pistacchio?', en:'Yes, can I taste the pistachio?'},
+      {speaker:'them', name:'Server', it:'Certo, ecco! Buono, no?', en:'Of course, here! Good, right?'},
+      {speaker:'you', name:'You', it:'Si! Un cono medio con pistacchio e nocciola.', en:'Yes! A medium cone with pistachio and hazelnut.'},
+      {speaker:'them', name:'Server', it:'Con panna?', en:'With cream?'},
+      {speaker:'you', name:'You', it:'Si, con panna! Quant\'e?', en:'Yes, with cream! How much?'},
+      {speaker:'them', name:'Server', it:'Tre euro e cinquanta.', en:'Three fifty.'},
+      {speaker:'you', name:'You', it:'Ecco. Grazie!', en:'Here you go. Thanks!'}
+    ],
+    quiz: [
+      {q:'Ask what flavors they have:', a:'Che gusti avete?', wrong:['Quali sapori?','Che gelato c\'e?','Gusti dove?']},
+      {q:'Order a small cone:', a:'Un cono piccolo, per favore.', wrong:['Cono uno piccolo.','Piccolo cono dammi.','Un gelato piccolo.']},
+      {q:'You want cream on top:', a:'Si, con panna, grazie!', wrong:['Panna si.','Crema sopra.','Voglio panna.']},
+      {q:'Ask to taste something:', a:'Posso assaggiare?', wrong:['Provo questo?','Gusto per favore?','Assaggio dammi.']}
+    ]
+  },
+  brewpub: {
+    phrases: [
+      {it:'Cosa avete alla spina?', en:'What do you have on tap?', ctx:'alla spina = on draft'},
+      {it:'Una birra media, per favore.', en:'A medium beer, please.', ctx:'piccola/media/grande'},
+      {it:'Avete birre artigianali?', en:'Do you have craft beers?', ctx:'artigianale = craft/artisan'},
+      {it:'Che tipo e? Bionda, rossa, scura?', en:'What type? Blonde, red, dark?', ctx:'Key beer color words'},
+      {it:'E amara o leggera?', en:'Is it bitter or light?', ctx:'Helps choose your style'},
+      {it:'Posso avere un assaggio?', en:'Can I have a taste?', ctx:'Tasting before committing'},
+      {it:'Prendo questa.', en:'I\'ll have this one.', ctx:'After deciding'},
+      {it:'Un\'altra, per favore.', en:'Another one, please.', ctx:'When the first was good'},
+      {it:'Avete qualcosa da mangiare?', en:'Do you have anything to eat?', ctx:'Bar snacks, taglieri'},
+      {it:'Il conto, per favore.', en:'The check, please.', ctx:'Same phrase everywhere'}
+    ],
+    dialogue: [
+      {speaker:'you', name:'You', it:'Buonasera! Cosa avete alla spina?', en:'Good evening! What\'s on tap?'},
+      {speaker:'them', name:'Barman', it:'Abbiamo sei birre alla spina. Vuole assaggiare?', en:'We have six on tap. Want to taste?'},
+      {speaker:'you', name:'You', it:'Si, posso assaggiare la bionda?', en:'Yes, can I taste the blonde?'},
+      {speaker:'them', name:'Barman', it:'Ecco. E una IPA con luppolo toscano.', en:'Here. It\'s an IPA with Tuscan hops.'},
+      {speaker:'you', name:'You', it:'Buona! Una media di questa, per favore.', en:'Good! A medium of this one, please.'},
+      {speaker:'them', name:'Barman', it:'Perfetto. Vuole anche un tagliere di salumi?', en:'Perfect. Want a charcuterie board too?'},
+      {speaker:'you', name:'You', it:'Si, perche no! Quant\'e in tutto?', en:'Yes, why not! How much total?'},
+      {speaker:'them', name:'Barman', it:'La birra sei euro, il tagliere dieci. Sedici in tutto.', en:'Beer six euros, board ten. Sixteen total.'}
+    ],
+    quiz: [
+      {q:'Ask what\'s on tap:', a:'Cosa avete alla spina?', wrong:['Birra alla spina?','Che birra avete?','Spina cosa?']},
+      {q:'Order a medium beer:', a:'Una birra media, per favore.', wrong:['Birra media dammi.','Media birra uno.','Una media birra.']},
+      {q:'Ask if it\'s bitter or light:', a:'E amara o leggera?', wrong:['Forte o piano?','Amaro o no?','Pesante o leggera?']},
+      {q:'Order another round:', a:'Un\'altra, per favore.', wrong:['Ancora una.','Di nuovo birra.','Birra ancora dammi.']}
+    ]
+  },
+  lunch: {
+    phrases: [
+      {it:'Buongiorno, avete un tavolo fuori?', en:'Hi, table outside?', ctx:'Al fresco for lunch'},
+      {it:'Siamo in due.', en:'Two of us.', ctx:'Simple party size'},
+      {it:'Il menu, per favore.', en:'The menu, please.', ctx:'Sometimes it\'s on a chalkboard'},
+      {it:'Avete un menu del giorno?', en:'Do you have a daily special?', ctx:'Often the best value'},
+      {it:'Il vino della casa, per favore.', en:'House wine, please.', ctx:'Rosso or bianco -- they\'ll ask'},
+      {it:'Rosso, grazie.', en:'Red, thanks.', ctx:'Quick answer to which wine'},
+      {it:'Per me, la pasta al pomodoro.', en:'For me, the tomato pasta.', ctx:'Simple ordering'},
+      {it:'E per lei?', en:'And for you?', ctx:'Waiter asks your companion'},
+      {it:'Un\'insalata mista, per favore.', en:'A mixed salad, please.', ctx:'Light lunch option'},
+      {it:'Il conto, per favore.', en:'The check, please.', ctx:'They won\'t bring it until you ask'}
+    ],
+    dialogue: [
+      {speaker:'you', name:'You', it:'Buongiorno! Avete un tavolo per due fuori?', en:'Hi! Table for two outside?'},
+      {speaker:'them', name:'Waiter', it:'Certo, seguitemi. Ecco il menu.', en:'Sure, follow me. Here\'s the menu.'},
+      {speaker:'you', name:'You', it:'Grazie. Avete un menu del giorno?', en:'Thanks. Do you have a daily special?'},
+      {speaker:'them', name:'Waiter', it:'Si, oggi abbiamo penne all\'arrabbiata e insalata caprese.', en:'Yes, today we have penne arrabbiata and caprese salad.'},
+      {speaker:'you', name:'You', it:'Perfetto. Le penne per me. E mezzo litro di vino rosso della casa.', en:'Perfect. The penne for me. And a half liter of house red.'},
+      {speaker:'them', name:'Waiter', it:'E per l\'altro signore?', en:'And for the other gentleman?'},
+      {speaker:'you', name:'You', it:'Un\'insalata caprese per lui, grazie.', en:'A caprese salad for him, thanks.'},
+      {speaker:'them', name:'Waiter', it:'Perfetto, arrivo subito.', en:'Perfect, coming right up.'},
+      {speaker:'you', name:'You', it:'Scusi, il conto per favore.', en:'Excuse me, the check please.'},
+      {speaker:'them', name:'Waiter', it:'Allora, ventiquattro euro in tutto.', en:'So, twenty-four euros total.'}
+    ],
+    quiz: [
+      {q:'Ask for a table outside:', a:'Avete un tavolo fuori?', wrong:['Tavolo fuori dammi.','Fuori posso?','Esterno tavolo?']},
+      {q:'Order house wine:', a:'Il vino della casa, per favore.', wrong:['Vino casa uno.','Casa vino dammi.','Un vino normale.']},
+      {q:'Ask about daily specials:', a:'Avete un menu del giorno?', wrong:['Speciale oggi?','Menu oggi che?','Giorno cosa avete?']},
+      {q:'Say "for me, the pasta":', a:'Per me, la pasta al pomodoro.', wrong:['Pasta mia pomodoro.','Io voglio pasta.','La pasta per io.']}
+    ]
+  },
+  greetings: {
+    phrases: [
+      {it:'Buongiorno!', en:'Good morning / Good day!', ctx:'Use until early afternoon'},
+      {it:'Buonasera!', en:'Good evening!', ctx:'Use from late afternoon onward'},
+      {it:'Buona giornata!', en:'Have a good day!', ctx:'Said when parting during the day'},
+      {it:'Buona serata!', en:'Have a good evening!', ctx:'Said when parting at night'},
+      {it:'Arrivederci!', en:'Goodbye!', ctx:'Polite, works everywhere'},
+      {it:'Ciao!', en:'Hi / Bye!', ctx:'Informal only -- friends, young people'},
+      {it:'Altrettanto!', en:'Same to you!', ctx:'Reply when someone wishes you well'},
+      {it:'Piacere!', en:'Nice to meet you!', ctx:'When introduced to someone'},
+      {it:'Come sta?', en:'How are you?', ctx:'Formal -- use with strangers'},
+      {it:'Bene, grazie. E lei?', en:'Well, thanks. And you?', ctx:'Polite response (formal)'},
+      {it:'Grazie mille!', en:'Thank you so much!', ctx:'Warmer than plain grazie'},
+      {it:'Prego!', en:'You\'re welcome!', ctx:'Also means "please go ahead"'},
+      {it:'Mi scusi.', en:'Excuse me.', ctx:'Getting attention politely'},
+      {it:'Permesso!', en:'Coming through!', ctx:'On a crowded bus or in a doorway'},
+      {it:'In bocca al lupo!', en:'Good luck!', ctx:'Lit: in the mouth of the wolf'},
+      {it:'Crepi!', en:'Thanks! (reply to in bocca al lupo)', ctx:'Lit: may it die -- the traditional response'}
+    ],
+    dialogue: [
+      {speaker:'you', name:'You', it:'Buongiorno!', en:'Good morning!'},
+      {speaker:'them', name:'Shopkeeper', it:'Buongiorno! Come sta?', en:'Good morning! How are you?'},
+      {speaker:'you', name:'You', it:'Bene, grazie. E lei?', en:'Well, thanks. And you?'},
+      {speaker:'them', name:'Shopkeeper', it:'Molto bene, grazie! Dica, cosa le serve?', en:'Very well, thanks! Tell me, what do you need?'},
+      {speaker:'you', name:'You', it:'Sto solo guardando, grazie.', en:'Just looking, thanks.'},
+      {speaker:'them', name:'Shopkeeper', it:'Prego, faccia pure!', en:'Please, go ahead!'},
+      {speaker:'you', name:'You', it:'Grazie mille, arrivederci!', en:'Thanks so much, goodbye!'},
+      {speaker:'them', name:'Shopkeeper', it:'Arrivederci! Buona giornata!', en:'Goodbye! Have a good day!'},
+      {speaker:'you', name:'You', it:'Altrettanto!', en:'Same to you!'}
+    ],
+    quiz: [
+      {q:'Someone says "Buona giornata!" You reply:', a:'Altrettanto!', wrong:['Grazie buona.','Anche tu.','Lo stesso.']},
+      {q:'Polite goodbye to a shopkeeper:', a:'Arrivederci!', wrong:['Ciao!','Addio!','Vado via!']},
+      {q:'How are you? (formal):', a:'Come sta?', wrong:['Come stai?','Come va amico?','Stai bene?']},
+      {q:'Excuse me, getting someone\'s attention:', a:'Mi scusi.', wrong:['Ehi!','Senta!','Scusa tu.']},
+      {q:'Someone says "In bocca al lupo!" You reply:', a:'Crepi!', wrong:['Grazie!','Anche tu!','Lupo morto!']}
+    ]
   }
 };
 var NUM_WORDS = {
@@ -340,7 +495,7 @@ var state = {
   currentTab:'numbers', numMode:'basic', speechRate:0.7,
   score:{correct:0,incorrect:0}, streak:0, practiced:new Set(),
   currentDrill:null,
-  scenarioModes:{cafe:'phrases',restaurant:'phrases',transport:'phrases',shopping:'phrases'},
+  scenarioModes:{cafe:'phrases',restaurant:'phrases',transport:'phrases',shopping:'phrases',gelato:'phrases',brewpub:'phrases',lunch:'phrases',greetings:'phrases'},
   italianVoice:null, audioAvailable:false
 };
 function initSpeech() {
@@ -439,7 +594,7 @@ function checkDrill(btn,selected,correct) {
 }
 function hearDrill(){if(state.currentDrill)speak(state.currentDrill.speakText);}
 function updateStreak(){var b=document.getElementById('streakBadge'),c=document.getElementById('streakCount');if(state.streak>=3){b.style.display='inline-flex';c.textContent=state.streak;}else{b.style.display='none';}}
-function updateProgress(){var t=state.practiced.size,pct=Math.min(100,(t/120)*100);document.getElementById('progressBar').style.width=pct+'%';document.getElementById('progressLabel').textContent=t+' phrases practiced';}
+function updateProgress(){var t=state.practiced.size,pct=Math.min(100,(t/180)*100);document.getElementById('progressBar').style.width=pct+'%';document.getElementById('progressLabel').textContent=t+' phrases practiced';}
 function renderScenario(section) {
   var mode=state.scenarioModes[section], data=SCENARIOS[section], c=document.getElementById(section+'Content');
   if(mode==='phrases'){
